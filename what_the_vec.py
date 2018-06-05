@@ -40,8 +40,8 @@ class P2VP(torch.nn.Module):
 
 class Experiment:
 
-    def __init__(self, model_name, learning_rate=0.1, embeddings_dim=300, 
-                num_iterations=100, decay_rate=0.98, batch_size=10000, 
+    def __init__(self, model_name, learning_rate=0.1, embeddings_dim=200, 
+                num_iterations=100, decay_rate=0.95, batch_size=10000, 
                 corrupt_size=5, w_reg=0., c_reg=0., cuda=False):
         self.model_name = model_name
         self.learning_rate = learning_rate
@@ -134,8 +134,6 @@ class Experiment:
                 epoch_loss.append(loss.item())
             if self.decay_rate:
                 scheduler.step()
-                # except:
-                #     continue
             print("Iteration: %d" % i)
             print("Loss: %.4f" % np.mean(epoch_loss))
             if not i%10:
@@ -170,7 +168,7 @@ if __name__ == '__main__':
                     help='Whether to randomly subsample frequent words or not')
     parser.add_argument('--threshold', type=float, default=1e-3, nargs="?",
                     help='Threshold for random subsampling')
-    parser.add_argument('--cutoff', type=int, default=800000, nargs="?",
+    parser.add_argument('--cutoff', type=int, default=None, nargs="?",
                     help='Cutoff of the dataset (if you want to test it on smaller data' \
                           'set it to none otherwise)')
     parser.add_argument('--model', type=str, default="p2v-l", nargs="?",
@@ -179,13 +177,13 @@ if __name__ == '__main__':
                     help='Number of iterations')
     parser.add_argument('--lr', type=float, default=0.1, nargs="?",
                     help='Initial learning rate')
-    parser.add_argument('--dr', type=float, default=0.98, nargs="?",
+    parser.add_argument('--dr', type=float, default=0.95, nargs="?",
                     help='Decay rate')
     parser.add_argument('--batch_size', type=int, default=10000, nargs="?",
                     help='Batch size')
     parser.add_argument('--num_neg', type=int, default=5, nargs="?",
                     help='Number of negative samples per each positive sample')
-    parser.add_argument('--dim', type=int, default=300, nargs="?",
+    parser.add_argument('--dim', type=int, default=200, nargs="?",
                     help='Embeddings dimensionality')
     parser.add_argument('--w_reg', type=float, default=0.5, nargs="?",
                     help='Regularization coefficient for W')
