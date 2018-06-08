@@ -41,7 +41,7 @@ class P2VP(torch.nn.Module):
 class Experiment:
 
     def __init__(self, model_name, learning_rate=0.1, embeddings_dim=200, 
-                num_iterations=100, decay_rate=0.95, batch_size=10000, 
+                num_iterations=100, decay_rate=0.98, batch_size=10000, 
                 corrupt_size=5, w_reg=0., c_reg=0., cuda=False):
         self.model_name = model_name
         self.learning_rate = learning_rate
@@ -94,6 +94,7 @@ class Experiment:
 
         losses = []
         tick = time.time()
+        counter = 0
         for i in range(1, self.num_iterations+1):
             model.train() 
             np.random.shuffle(cooccurrences)
@@ -104,6 +105,7 @@ class Experiment:
             
             epoch_loss = []
             for j in range(0, len(cooccurrences), self.batch_size):
+                counter += 1
                 pos_pairs = cooccurrences[j:min(j+self.batch_size, len(cooccurrences))]
                 neg_pairs = all_neg_pairs[j*self.corrupt_size:j*self.corrupt_size+
                                           self.batch_size*self.corrupt_size]
@@ -132,8 +134,8 @@ class Experiment:
                 loss.backward()
                 opt.step()
                 epoch_loss.append(loss.item())
-            if self.decay_rate:
-                scheduler.step()
+                if self.decay_rate and not counter%500:
+                    scheduler.step()
             print("Iteration: %d" % i)
             print("Loss: %.4f" % np.mean(epoch_loss))
             if not i%10:
@@ -177,7 +179,7 @@ if __name__ == '__main__':
                     help='Number of iterations')
     parser.add_argument('--lr', type=float, default=0.1, nargs="?",
                     help='Initial learning rate')
-    parser.add_argument('--dr', type=float, default=0.95, nargs="?",
+    parser.add_argument('--dr', type=float, default=0.98, nargs="?",
                     help='Decay rate')
     parser.add_argument('--batch_size', type=int, default=10000, nargs="?",
                     help='Batch size')
