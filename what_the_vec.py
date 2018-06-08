@@ -147,7 +147,7 @@ class Experiment:
                             "losses":losses, "i2w":d.idx_to_word})
                 else:
                     np.save("%s%s%d.npy" % (outfolder, fname, i), {"W":np_W, "C":np_C, 
-                            "losses":losses, "i2w":d.idx_to_word})
+                            "losses":losses})
             losses.append(np.mean(epoch_loss))
         print("Time: ", str(time.time()-tick))
 
